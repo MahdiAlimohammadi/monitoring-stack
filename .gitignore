@@ -1,0 +1,39 @@
+
+---
+
+### 🛡️ `.gitignore`
+
+```gitignore
+# Docker persistent data
+/data/
+*.pid
+*.sock
+
+# OS/system files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Secrets (add your own rules if needed)
+.env
+.env.*
+
+# VSCode settings
+.vscode/
+
+# Editor backups
+*~
+*.swp
+*.swo
+
+# Ignore compiled files
+__pycache__/
+*.py[cod]
+*.out
+
+# Node.js / frontend junk (if any)
+node_modules/
+dist/

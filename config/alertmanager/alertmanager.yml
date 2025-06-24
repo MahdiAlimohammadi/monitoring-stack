@@ -1,0 +1,40 @@
+global:
+  # How long to wait before considering an alert resolved
+  resolve_timeout: 5m
+
+route:
+  # Group alerts by alertname for batching notifications
+  group_by: ['alertname']
+
+  # How long to wait before sending the first notification for a group
+  group_wait: 30s
+
+  # Minimum interval between sending notifications for a group
+  group_interval: 5m
+
+  # Interval for repeating notifications for ongoing alerts
+  repeat_interval: 3h
+
+  # Default receiver for all alerts
+  receiver: 'mattermost-notifications'
+
+receivers:
+  - name: 'mattermost-notifications'
+    mattermost_configs:
+      - url: 'https://mattermost.yourdomain.com/hooks/your-webhook-url'
+        # Optional: customize message format
+        message: | 
+          '{{ range .Alerts }} 
+          *Alert:* {{ .Annotations.summary }}  
+          *Severity:* {{ .Labels.severity }}  
+          *Instance:* {{ .Labels.instance }}  
+          *Description:* {{ .Annotations.description }}  
+          {{ end }}'
+
+inhibit_rules:
+  # Suppress notifications for lower-severity alerts if higher-severity alert is firing
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'instance']

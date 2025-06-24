@@ -1,38 +1,105 @@
-# Stack Monitoring Application
-This application uses Grafana, Loki, Promtail, Prometheus, and Node Exporter to monitor logs and server performance. Grafana provides a user-friendly dashboard, Loki aggregates logs, Promtail scrapes logs, Prometheus collects metrics, and Node Exporter exposes host metrics.
+# Monitoring Stack
 
-## Components
-- **Grafana**: An open-source platform for monitoring and observability. It allows you to query, visualize, alert on, and understand your metrics.
-- **Loki**: A horizontally-scalable, highly-available, multi-tenant log aggregation system inspired by Prometheus.
-- **Promtail**: An agent which ships the contents of local logs to a private Loki instance or Grafana Cloud.
-- **Prometheus**: An open-source systems monitoring and alerting toolkit.
-- **Node Exporter**: A Prometheus exporter for hardware and OS metrics with pluggable metric collectors.
+This project provides a complete observability stack using **Prometheus**, **Grafana**, **Loki**, **Promtail**, **Alertmanager**, and **Node Exporter** — all orchestrated via Docker Compose.
 
-## Running the Application
-First of all edit `config/prometheus/prometheus.yml` and set the right ip address and eventually the right labels.
-To run the application, use the following command: `USER_ID=$(id -u) docker compose up -d`
-This command uses Docker Compose to start the application. It sets the USER_ID environment variable to your user ID, which is obtained by running id -u.
-For the first access to your Grafana dashboard use *user=admin* and *password=admin*.
+It enables centralized **metrics collection**, **log aggregation**, and **alerting** for Linux servers in single-node or internal environments.
 
+---
 
-## Checking the Status of Services
-You can check the status of the services by visiting the following URLs:
+## 🔧 Components
 
-- `localhost:3100/metrics`: This page shows various metrics related to the application.
-- `localhost:3100/ready`: This page indicates whether the application is ready. If it doesn't say "ready", try refreshing the page.
-- `localhost:9090`: This page shows the Prometheus dashboard where you can query your metrics.
-- `localhost:9100/metrics`: This page shows the metrics exposed by the Node Exporter.
-- `localhost:3000`: Access Grafana
+- **Grafana** – A powerful visualization and analytics tool for metrics and logs.
+- **Prometheus** – Collects and stores time series metrics.
+- **Loki** – A log aggregation system designed to work seamlessly with Grafana.
+- **Promtail** – Log collector that ships local logs to Loki.
+- **Alertmanager** – Handles alerts from Prometheus and routes them to Mattermost or other systems.
+- **Node Exporter** – Exposes system-level metrics (CPU, memory, disk, network, etc.).
 
-*Please note that these URLs assume that the application is running on your local machine. If you're running the application on a different machine, replace localhost with the IP address or hostname of that machine.*
+---
 
-## Prometheus Configuration
-The Prometheus configuration is located in ./config/prometheus/prometheus.yml. This file tells Prometheus what services to scrape metrics from. By default, it is configured to scrape metrics from the Node Exporter.
+## 🚀 Getting Started
 
-## Node Exporter
-The Node Exporter is a tool that collects information about the system including CPU, disk I/O, memory, network, and others. It exposes this information in a format that Prometheus can use.
+### 1. Adjust Configuration
 
-## Create a new Dashboard
-1) Create two new data sources. One for Prometheus with url `http://prometheus:9100` and the other for Loki with url `http://loki:3100`
-2) Import a new dashboard for Prometheus monitoring like the one with id **1860** or create a new one.
-3) Import a new dashboard for Loki monitoring like the one with id **13639** or create a new one
+Edit the Prometheus targets in `config/prometheus/prometheus.yml` and update IP addresses and labels based on your infrastructure.
+
+### 2. Start the Stack
+
+```bash
+USER_ID=$(id -u) docker compose up -d
+```
+
+This launches the monitoring stack in the background. The `USER_ID` ensures proper file permissions for the Grafana container.
+
+### 3. Access Grafana
+
+- URL: [http://localhost:3000](http://localhost:3000)
+- Default credentials:  
+  - **Username:** `admin`  
+  - **Password:** `admin`
+
+---
+
+## 🌐 Service URLs
+
+| Service        | URL                             | Description                        |
+|----------------|----------------------------------|------------------------------------|
+| Grafana        | `http://localhost:3000`          | Dashboards and visualizations      |
+| Prometheus     | `http://localhost:9090`          | Query metrics (PromQL)             |
+| Alertmanager   | `http://localhost:9093`          | Manage and route alerts            |
+| Loki           | `http://localhost:3100/metrics`  | Loki metrics                       |
+| Loki Readiness | `http://localhost:3100/ready`    | Health/readiness check             |
+| Node Exporter  | `http://localhost:9100/metrics`  | System metrics (host mode)         |
+
+> If running on a remote server, replace `localhost` with the server’s IP address or hostname.
+
+---
+
+## 🧠 Prometheus Configuration
+
+Prometheus config is located in:
+
+```
+config/prometheus/prometheus.yml
+```
+
+- Scrapes itself, Alertmanager, Loki, and Node Exporters
+- Supports multiple environments and datacenters via labels
+
+---
+
+## 📦 Node Exporter
+
+Runs with `host` networking to access system metrics directly.  
+Collected metrics include:
+
+- CPU usage
+- Memory and swap
+- Disk I/O and filesystem stats
+- Network statistics
+
+---
+
+## 📊 Create Dashboards in Grafana
+
+1. Add data sources:
+   - **Prometheus**: `http://prometheus:9090`
+   - **Loki**: `http://loki:3100`
+
+2. Import dashboards:
+   - Prometheus Monitoring: Dashboard ID **1860**
+   - Loki Logs: Dashboard ID **13639**
+
+3. Or create your own dashboards using PromQL and LogQL.
+
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).
+
+---
+
+## 🙌 Contributions
+
+Contributions and suggestions are welcome! Feel free to fork the project, submit issues or open pull requests.

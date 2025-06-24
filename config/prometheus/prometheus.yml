@@ -1,6 +1,76 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ['alertmanager:9093']
+
 scrape_configs:
-  - job_name: 'node'
+
+  # Scrape Prometheus itself
+  - job_name: 'prometheus'
     static_configs:
-      - targets: ['localhost:9100'] # On AWS EC2, use the private IP address of the instance.
-      - labels:
-          name: value-for-the-name
+      - targets: ['localhost:9090']
+        labels:
+          instance: prometheus
+          datacenter: tehran
+          environment: monitoring
+
+  # Scrape Alertmanager
+  - job_name: 'alertmanager'
+    static_configs:
+      - targets: ['alertmanager:9093']
+        labels:
+          instance: alertmanager
+          datacenter: tehran
+          environment: monitoring
+
+  # Scrape Loki (metrics exposed by Loki itself)
+  - job_name: 'loki'
+    static_configs:
+      - targets: ['loki:3100']
+        labels:
+          instance: loki
+          datacenter: tehran
+          environment: monitoring
+
+  # Scrape Node Exporters (grouped by role, datacenter, env)
+  - job_name: 'node-exporters'
+
+    static_configs:
+      - targets: ['10.0.0.1:9100']
+        labels:
+          instance: node-01
+          role: web
+          datacenter: tehran
+          environment: prod
+
+      - targets: ['10.0.0.2:9100']
+        labels:
+          instance: node-02
+          role: db
+          datacenter: tehran
+          environment: prod
+
+      - targets: ['10.1.0.1:9100']
+        labels:
+          instance: node-03
+          role: web
+          datacenter: sofia
+          environment: staging
+
+      - targets: ['10.1.0.2:9100']
+        labels:
+          instance: node-04
+          role: cache
+          datacenter: sofia
+          environment: staging
+
+      - targets: ['10.2.0.1:9100']
+        labels:
+          instance: node-05
+          role: db
+          datacenter: frankfurt
+          environment: dev

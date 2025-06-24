@@ -1,31 +1,39 @@
 server:
-  http_listen_port: 3100
-  grpc_listen_port: 9096
+  http_listen_port: 9080       # default Promtail HTTP port
+  grpc_listen_port: 0          # disable gRPC if not needed
 
 positions:
-  filename: /tmp/positions./tmp/positions.yaml
+  filename: /var/lib/promtail/positions.yaml  # store file read positions here
 
 clients:
-  - url: http://loki:3100/loki/api/v1/push
+  - url: http://loki:3100/loki/api/v1/push    # push logs to Loki
 
-#local machine logs
 scrape_configs:
-  - job_name: local
+  # System log files
+  - job_name: system-logs
     static_configs:
-      - targets:
-          - localhost
-        labels:
-          job: logs
-          __path__: /var/log/
-          
-      # Example of mapping multiple log folders.
-      # - targets:
-      #     - localhost
-      #   labels:
-      #     job: docker
-      #     __path__: /var/log/docker/**/*.log
-      # - targets:
-      #     - localhost
-      #   labels:
-      #     job: cronjob
-      #     __path__: /var/log/cronjob/**/*.log
+      - labels:
+          job: syslog
+          host: ${HOSTNAME}
+          __path__: /var/log/syslog
+
+      - labels:
+          job: auth
+          host: ${HOSTNAME}
+          __path__: /var/log/auth.log
+
+  # Nginx logs (optional example)
+  # - job_name: nginx
+  #   static_configs:
+  #     - labels:
+  #         job: nginx
+  #         host: ${HOSTNAME}
+  #         __path__: /var/log/nginx/*.log
+
+  # Docker logs (optional example)
+  # - job_name: docker
+  #   static_configs:
+  #     - labels:
+  #         job: docker
+  #         host: ${HOSTNAME}
+  #         __path__: /var/lib/docker/containers/*/*.log
