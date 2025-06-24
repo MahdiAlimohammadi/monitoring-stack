@@ -4,7 +4,7 @@ services:
 
   # Grafana - Metrics and logs visualization dashboard
   grafana:
-    image: grafana/grafana:10.4.2
+    image: grafana/grafana:12.0.2
     user: "${USER_ID:-472}"
     volumes:
       - ./config/grafana:/var/lib/grafana
@@ -19,7 +19,7 @@ services:
 
   # Loki - Log aggregation system
   loki:
-    image: grafana/loki:2.9.8
+    image: grafana/loki:3.4.4
     volumes:
       - ./config/loki:/etc/loki
       - ./data/loki:/var/lib/loki
@@ -32,7 +32,7 @@ services:
 
   # Promtail - Log collector and shipper for Loki
   promtail:
-    image: grafana/promtail:2.9.8
+    image: grafana/promtail:3.4.4
     volumes:
       - /var/log:/var/log
       - ./config/promtail:/etc/promtail
@@ -46,7 +46,7 @@ services:
 
   # Prometheus - Metrics collection and monitoring system
   prometheus:
-    image: prom/prometheus:v2.51.1
+    image: prom/prometheus:v3.4.1
     volumes:
       - ./config/prometheus:/etc/prometheus
     ports:
@@ -61,7 +61,7 @@ services:
 
   # Alertmanager - Handles alerts sent by Prometheus and sends notifications
   alertmanager:
-    image: prom/alertmanager:v0.27.0
+    image: prom/alertmanager:v0.28.1
     ports:
       - "9093:9093"
     volumes:
@@ -74,7 +74,7 @@ services:
 
   # Node Exporter - Collects host hardware and OS metrics
   node-exporter:
-    image: prom/node-exporter:v1.8.1
+    image: prom/node-exporter:v1.9.1
     network_mode: host
     volumes:
       - /proc:/host/proc:ro
